@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e60012">
+<meta name="description" content="Sitio de Nintendo para Colombia: consolas Nintendo Switch, videojuegos, noticias y más.">
+<title>Nintendo - Sitio Oficial para Colombia: Juegos, Noticias y Más</title>
+<style>
+  :root{
+    --red:#e60012; --red-dark:#b8000e; --ink:#2d2d2d; --muted:#6b6b6b;
+    --bg:#f4f4f4; --card:#fff; --line:#e3e3e3; --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+  a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:3px solid #0a66ff;outline-offset:2px}
+  .skip{position:absolute;left:-999px;background:#fff;padding:8px 12px;z-index:100}
+  .skip:focus{left:8px;top:8px}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  /* Header */
+  header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+  .topbar{background:var(--red);height:6px}
+  .nav{display:flex;align-items:center;gap:24px;height:64px}
+  .logo{background:var(--red);color:#fff;font-weight:900;font-size:22px;letter-spacing:.5px;padding:4px 16px;border-radius:999px}
+  .menu{display:flex;gap:4px;margin-left:8px;flex:1}
+  .menu a{padding:8px 14px;border-radius:999px;font-weight:600;font-size:15px}
+  .menu a:hover{background:#f0f0f0;color:var(--red)}
+  .tools{display:flex;align-items:center;gap:6px}
+  .tools button,.tools a{background:none;border:0;cursor:pointer;padding:8px 12px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink)}
+  .tools button:hover,.tools a:hover{background:#f0f0f0}
+  .badge{background:var(--red);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px;margin-left:4px}
+  .burger{display:none}
+  @media(max-width:860px){
+    .menu{display:none;position:absolute;top:70px;left:0;right:0;background:#fff;flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--line)}
+    .menu.open{display:flex}
+    .burger{display:block;margin-left:auto}
+    .tools .hide-sm{display:none}
+  }
+
+  /* Hero */
+  .hero{background:#111;color:#fff;position:relative;overflow:hidden}
+  .slide{display:none;min-height:440px;align-items:center;position:relative}
+  .slide.active{display:flex}
+  .slide::before{content:"";position:absolute;inset:0;background:var(--bg-slide);opacity:1}
+  .slide .wrap{position:relative;z-index:2;padding-top:50px;padding-bottom:90px}
+  .slide h1{font-size:clamp(30px,5vw,56px);line-height:1.05;max-width:640px;margin-bottom:14px}
+  .slide p{max-width:520px;font-size:18px;opacity:.92;margin-bottom:24px}
+  .btn{display:inline-block;background:var(--red);color:#fff;font-weight:700;padding:12px 26px;border-radius:999px;border:2px solid var(--red);cursor:pointer;font-size:15px}
+  .btn:hover{background:var(--red-dark);border-color:var(--red-dark)}
+  .btn.ghost{background:transparent;color:var(--red);border-color:var(--red)}
+  .btn.ghost:hover{background:var(--red);color:#fff}
+  .btn.white{background:#fff;color:var(--red);border-color:#fff}
+  .thumbs{position:absolute;bottom:16px;left:0;right:0;z-index:5;display:flex;gap:10px;justify-content:center}
+  .thumbs button{width:56px;height:56px;border-radius:8px;border:3px solid transparent;cursor:pointer;opacity:.7;font-weight:800;color:#fff;font-size:12px}
+  .thumbs button.on{border-color:#fff;opacity:1}
+  .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;background:rgba(0,0,0,.45);color:#fff;border:0;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer}
+  .arrow:hover{background:var(--red)}
+  .arrow.l{left:14px}.arrow.r{right:14px}
+
+  /* Sections */
+  section{padding:48px 0}
+  h2{font-size:28px;margin-bottom:22px;font-weight:800}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .head a{color:var(--red);font-weight:700}
+  .head a:hover{text-decoration:underline}
+
+  /* Destacados */
+  .featured{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+  .tile{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.12);display:flex;flex-direction:column}
+  .tile:hover{box-shadow:0 6px 16px rgba(0,0,0,.2)}
+  .tile .art{height:130px;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:800;font-size:15px}
+  .tile .body{padding:14px;display:flex;flex-direction:column;gap:4px;flex:1}
+  .tile .tag{font-size:12px;color:var(--muted);font-weight:600}
+  .tile .cta{margin-top:auto;color:var(--red);font-weight:700;font-size:14px}
+
+  /* Bandas */
+  .band{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+  .band .art{min-height:260px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:900;padding:20px;text-align:center}
+  .band .txt{padding:36px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+  .band .txt h3{font-size:26px;line-height:1.2}
+  .band small{color:var(--muted);font-size:12px}
+  .band.rev .art{order:2}
+  @media(max-width:760px){.band{grid-template-columns:1fr}.band.rev .art{order:0}}
+  .stack{display:grid;gap:24px}
+
+  /* Novedades */
+  .news{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .news article{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.12);border-top:4px solid var(--red)}
+  .news time{font-size:13px;color:var(--muted);font-weight:700}
+  .news h3{font-size:18px;margin:6px 0 8px;line-height:1.3}
+  .news p{font-size:14px;color:#444;margin-bottom:10px}
+  .news a.more{color:var(--red);font-weight:700;font-size:14px}
+
+  /* Carruseles de juegos */
+  .rail{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x proximity}
+  .rail::-webkit-scrollbar{height:8px}.rail::-webkit-scrollbar-thumb{background:#c9c9c9;border-radius:8px}
+  .game{flex:0 0 190px;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.12);scroll-snap-align:start;display:flex;flex-direction:column}
+  .game:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.2);transition:.15s}
+  .game .cover{aspect-ratio:1/1;display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:800;font-size:15px;line-height:1.15;position:relative}
+  .game .flag{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-size:11px;padding:2px 8px;border-radius:999px}
+  .game .flag.off{background:#111}
+  .game .info{padding:12px;display:flex;flex-direction:column;gap:2px}
+  .game .date{font-size:12px;color:var(--muted)}
+  .game .price{font-weight:800}
+  .game .price s{font-weight:400;color:var(--muted);margin-left:6px;font-size:13px}
+  .game .demo{font-size:12px;color:#0a7a3d;font-weight:700}
+
+  /* Footer */
+  footer{background:#fff;border-top:1px solid var(--line);margin-top:30px;padding:40px 0 20px}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:24px}
+  footer h4{font-size:15px;margin-bottom:10px}
+  footer li{list-style:none;margin:6px 0;font-size:14px;color:#444}
+  footer li a:hover{color:var(--red);text-decoration:underline}
+  .legal{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+  .fineprint{font-size:12px;color:var(--muted)}
+
+  /* Toast */
+  #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:#111;color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;transition:.25s;z-index:200}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Ir al contenido principal</a>
+
+<header>
+  <div class="topbar"></div>
+  <div class="wrap nav">
+    <a class="logo" href="#" aria-label="Nintendo - Inicio">Nintendo</a>
+    <nav class="menu" id="menu" aria-label="Principal">
+      <a href="#novedades">Novedades</a>
+      <a href="#tienda">Tienda</a>
+      <a href="#consolas">Consolas</a>
+      <a href="#online">Switch Online</a>
+      <a href="https://support.nintendo.com/" target="_blank" rel="noopener">Asistencia</a>
+    </nav>
+    <div class="tools">
+      <a href="#" class="hide-sm" data-toast="Lista de deseos vacía">♡ Lista de deseos</a>
+      <button class="hide-sm" data-toast="Región: Colombia · Español">🇨🇴 Colombia</button>
+      <button id="cartBtn" aria-label="Carrito">🛒<span class="badge" id="cartCount">0</span></button>
+      <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO -->
+  <div class="hero" id="hero" aria-roledescription="carrusel">
+    <button class="arrow l" id="prev" aria-label="Anterior">‹</button>
+    <button class="arrow r" id="next" aria-label="Siguiente">›</button>
+    <div id="slides"></div>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+
+  <!-- DESTACADOS -->
+  <section id="tienda">
+    <div class="wrap">
+      <h2>Destacados</h2>
+      <div class="featured" id="featured"></div>
+    </div>
+  </section>
+
+  <!-- BANDAS -->
+  <section style="padding-top:0">
+    <div class="wrap stack">
+      <div class="band">
+        <div class="art" style="background:linear-gradient(135deg,#0f9d58,#0b5d34)">Nintendo Today!</div>
+        <div class="txt">
+          <h3>Las tarjetas digitales coleccionables inspiradas en la serie The Legend of Zelda ya están disponibles en la aplicación Nintendo Today!</h3>
+          <div><a class="btn" href="https://www.nintendo.com/es-co/mobile-apps/nintendo-today/" target="_blank" rel="noopener">Más información</a></div>
+          <small>Se requiere una cuenta Nintendo, un dispositivo inteligente compatible y una conexión estable a internet. Es posible que se apliquen cargos de datos celulares. Se requiere iOS 16.0 o posterior. Se requiere Android 10.0 o posterior.</small>
+        </div>
+      </div>
+
+      <div class="band rev" id="consolas">
+        <div class="art" style="background:linear-gradient(135deg,#e60012,#7a000a)">Nintendo Switch 2</div>
+        <div class="txt">
+          <h3>Explora las novedades que ofrece la consola Nintendo Switch 2</h3>
+          <div><a class="btn" href="https://www.nintendo.com/es-co/gaming-systems/switch-2/features/" target="_blank" rel="noopener">Más detalles</a></div>
+        </div>
+      </div>
+
+      <div class="band">
+        <div class="art" style="background:linear-gradient(135deg,#1e66f5,#0b2f87)">Nintendo Store</div>
+        <div class="txt">
+          <h3>¡Compra, descarga y juega de inmediato!</h3>
+          <div><a class="btn" href="https://www.nintendo.com/es-co/store/games/" target="_blank" rel="noopener">Comprar juegos</a></div>
+        </div>
+      </div>
+
+      <div class="band rev" id="online">
+        <div class="art" style="background:linear-gradient(135deg,#f5a300,#a15c00)">Nintendo Switch Online<br>+ Paquete de expansión</div>
+        <div class="txt">
+          <h3>Juega en línea, descubre los juegos clásicos y más</h3>
+          <div><a class="btn" href="https://www.nintendo.com/es-co/online/" target="_blank" rel="noopener">Más información</a></div>
+          <small>*Se requiere la versión completa del juego para utilizar el contenido de ese juego. Se vende por separado. Aplican términos.</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOVEDADES -->
+  <section id="novedades">
+    <div class="wrap">
+      <div class="head"><h2>Novedades</h2><a href="https://www.nintendo.com/es-co/whatsnew/" target="_blank" rel="noopener">Ver todos los artículos de noticias</a></div>
+      <div class="news" id="news"></div>
+    </div>
+  </section>
+
+  <!-- MÁS VENDIDOS -->
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><h2>Los más vendidos de Nintendo Switch</h2><a href="https://www.nintendo.com/es-co/store/games/best-sellers/" target="_blank" rel="noopener">Ver la lista completa</a></div>
+      <div class="rail" id="best"></div>
+    </div>
+  </section>
+
+  <!-- NUEVOS LANZAMIENTOS -->
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="head"><h2>Nuevos lanzamientos de Nintendo Switch</h2><a href="https://www.nintendo.com/es-co/store/games/new-releases/" target="_blank" rel="noopener">Ver la lista completa</a></div>
+      <div class="rail" id="fresh"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><h4>Acerca de Nintendo</h4><ul><li><a href="https://www.nintendo.co.jp/sustainability/en-us/index.html" target="_blank" rel="noopener">Sostenibilidad</a></li></ul></div>
+      <div><h4>Tienda</h4><ul>
+        <li><a href="https://www.nintendo.com/es-co/store/games/nintendo-switch-2-games/" target="_blank" rel="noopener">Juegos de Nintendo Switch 2</a></li>
+        <li><a href="https://www.nintendo.com/es-co/store/games/nintendo-switch-games/" target="_blank" rel="noopener">Juegos de Nintendo Switch</a></li>
+        <li><a href="https://www.nintendo.com/es-co/switch/" target="_blank" rel="noopener">Equipo</a></li>
+        <li><a href="https://www.nintendo.com/es-co/store/sales-and-deals/" target="_blank" rel="noopener">Ofertas y ventas</a></li>
+        <li><a href="https://www.nintendo.com/es-co/online/" target="_blank" rel="noopener">Nintendo Switch Online</a></li></ul></div>
+      <div><h4>Asistencia</h4><ul>
+        <li><a href="https://support.nintendo.com/switch2/" target="_blank" rel="noopener">Nintendo Switch 2</a></li>
+        <li><a href="https://support.nintendo.com/switch/" target="_blank" rel="noopener">Nintendo Switch</a></li>
+        <li><a href="https://support.nintendo.com/account/" target="_blank" rel="noopener">Cuenta Nintendo</a></li>
+        <li><a href="https://www.nintendo.com/es-co/refund-return-policy/" target="_blank" rel="noopener">Reembolsos y devoluciones</a></li>
+        <li><a href="https://support.nintendo.com/warranty" target="_blank" rel="noopener">Garantía</a></li></ul></div>
+      <div><h4>Padres</h4><ul>
+        <li><a href="https://support.nintendo.com/parents/" target="_blank" rel="noopener">Información para padres</a></li>
+        <li><a href="https://www.nintendo.com/es-co/mobile-apps/parental-controls/" target="_blank" rel="noopener">Control parental</a></li></ul></div>
+      <div><h4>Privacidad</h4><ul>
+        <li><a href="https://www.nintendo.com/es-co/privacy-policy/" target="_blank" rel="noopener">Política de privacidad</a></li>
+        <li><a href="https://www.nintendo.com/es-co/privacy-request/#cookies" target="_blank" rel="noopener">Cookies y anuncios basados en intereses</a></li></ul></div>
+      <div><h4>Comunidad</h4><ul>
+        <li><a href="https://www.nintendo.com/es-co/community-guidelines/" target="_blank" rel="noopener">Directrices de la comunidad</a></li>
+        <li><a href="https://www.nintendo.com/es-co/online-safety/" target="_blank" rel="noopener">Seguridad en línea</a></li>
+        <li><a href="https://support.nintendo.com/healthsafety/" target="_blank" rel="noopener">Precauciones de salud y seguridad</a></li></ul></div>
+    </div>
+    <div class="legal">
+      <span>© Nintendo. Los juegos son propiedad de sus respectivos dueños.</span>
+      <span><a href="https://es-americas-support.nintendo.com/app/contact" target="_blank" rel="noopener">Contáctanos</a> · <a href="https://www.nintendo.com/es-co/terms-of-use/" target="_blank" rel="noopener">Condiciones de Uso</a></span>
+    </div>
+    <p class="fineprint" style="margin-top:10px">Maqueta educativa inspirada en nintendo.com/es-co. Nintendo y sus marcas pertenecen a sus respectivos dueños.</p>
+  </div>
+</footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- Datos ---------- */
+const BASE = "https://www.nintendo.com/es-co/";
+const slides = [
+  {t:"Nintendo Switch Sports Resort", d:"Compite en 12 deportes distintos, solo o con un amigo. Disponible el 22 de octubre en Nintendo Switch 2.", cta:"Más información", href:"store/products/nintendo-switch-sports-resort-switch-2/", c:["#0077c8","#00294d"], s:"Sports"},
+  {t:"The Legend of Zelda: Ocarina of Time", d:"Exclusivo para la consola Nintendo Switch 2. Disponible el 5 de noviembre.", cta:"Más información", href:"store/products/the-legend-of-zelda-ocarina-of-time-switch-2/", c:["#2e8b57","#0d2f1c"], s:"Zelda"},
+  {t:"Fire Emblem: Fortune's Weave", d:"Cuatro héroes y un destino por tejer. Ya disponible, con Pase de expansión.", cta:"Más información", href:"store/products/fire-emblem-fortunes-weave-switch-2/", c:["#6a3fb5","#1c0f3d"], s:"FE"},
+  {t:"Bluey's Happy Snaps", d:"¡Juega, toma fotos de divertidos recuerdos y explora el mundo de Bluey como nunca antes!", cta:"Más información", href:"store/products/blueys-happy-snaps-switch-2/", c:["#f59e0b","#7c3a00"], s:"Bluey"}
+];
+
+const featured = [
+  ["Call of Duty: Modern Warfare 4","Acceso anticipado a Campaña, ya disponible","Nintendo Switch 2","store/products/call-of-duty-modern-warfare-4-standard-edition-switch-2/"],
+  ["Colección Halloween","Desde dulces banquetes hasta tenebrosos aullidos, celebra esta temporada","Más información","store/showroom/halloween-collection/"],
+  ["Fire Emblem: Fortune's Weave – Pase de expansión","Disponible ya","Nintendo Switch 2","store/products/fire-emblem-fortunes-weave-expansion-pass-70070000041191-switch-2/"],
+  ["Íconos de usuario de Halloween","¿Quieres renovar tu ícono de usuario?","Noticias y eventos","whatsnew/los-elementos-iconicos-inspirados-en-halloween-estan-aqui-por-tiempo-limitado/"],
+  ["Pikmin 4 – Switch 2 Edition + Dandori Academy","Paquete de mejora","Nintendo Switch 2","store/products/pikmin-4-nintendo-switch-2-edition-plus-dandori-academy-upgrade-pack-switch-2/"],
+  ["Minecraft","Reserva ya","Nintendo Switch 2","store/products/minecraft-switch-2/"],
+  ["KINGDOM HEARTS Collection [I～III]","Disponible ya","Nintendo Switch 2","store/products/kingdom-hearts-collection-i-iii-switch-2/"],
+  ["Resident Evil 2 Deluxe Edition","Reserva ya","Nintendo Switch 2","store/products/resident-evil-2-deluxe-edition-switch-2/"],
+  ["Xenoblade Chronicles 3 – Switch 2 Edition","Paquete de mejora","Nintendo Switch 2","store/products/xenoblade-chronicles-3-nintendo-switch-2-edition-upgrade-pack-switch-2/"]
+];
+
+const news = [
+  ["16/10/26","¡Entra en calor con algunos deportes nuevos y conocidos en Nintendo Switch Sports Resort!","El 22 de octubre podrás competir en 12 deportes distintos, ya sea en el modo para un solo jugador o con un amigo.","whatsnew/entra-en-calor-con-algunos-deportes-nuevos-y-conocidos-en-nintendo-switch-sports-resort/"],
+  ["15/10/26","¡Llega contenido descargable de pago a Fire Emblem: Fortune's Weave! ¡La oleada 1 ya está disponible!","Mira el video para ver un adelanto del contenido descargable de pago Pase de expansión.","whatsnew/llega-contenido-descargable-de-pago-a-fire-emblem-fortunes-weave-la-oleada-1-ya-esta-disponible/"],
+  ["15/10/26","Los elementos icónicos inspirados en Halloween están aquí por tiempo limitado","Renueva tu ícono de usuario con la temporada más tenebrosa del año.","whatsnew/los-elementos-iconicos-inspirados-en-halloween-estan-aqui-por-tiempo-limitado/"],
+  ["15/10/26","¡Ya está disponible Bluey's Happy Snaps!","¡Juega, toma fotos de divertidos recuerdos y explora el mundo de Bluey como nunca antes!","whatsnew/ya-esta-disponible-blueys-happy-snaps-juega-toma-fotos-de-divertidos-recuerdos-y-explora-el-mundo-de-bluey-como-nunca-antes-en-blueys-happy-snaps/"],
+  ["14/10/26","¡Este es el último adelanto de The Legend of Zelda: Ocarina of Time!","Disponible el 5 de noviembre.","whatsnew/este-es-el-ultimo-adelanto-de-the-legend-of-zelda-ocarina-of-time-disponible-el-5-de-noviembre/"],
+  ["13/10/26","¡Adéntrate en una experiencia Just Dance totalmente nueva!","Celebra las canciones, los estilos y los recuerdos que marcaron a generaciones.","whatsnew/adentrate-en-una-experiencia-just-dance-totalmente-nueva-que-celebra-las-canciones-los-estilos-y-los-recuerdos-que-marcaron-a-generaciones/"]
+];
+
+// [título, fecha, precio, precioAnterior|null, flag|null, demo?]
+const best = [
+  ["Hogwarts Legacy","14/11/23",219999],
+  ["The Witcher 3: Wild Hunt — Remastered","29/9/26",177999],
+  ["Minecraft Dungeons II","29/9/26",119900],
+  ["Minecraft","1/9/21",91900],
+  ["ASSASSIN'S CREED THE EZIO COLLECTION","17/2/22",152900],
+  ["Fire Emblem: Fortune's Weave","17/9/26",279900],
+  ["Pokémon Edición Rojo Fuego (Inglés)","27/2/26",79900],
+  ["LEGO Superhéroes de Marvel","5/10/21",152990],
+  ["Middle-earth: Shadow of Mordor GOTY","30/9/26",91900],
+  ["Castlevania Dominus Collection","27/8/24",79900],
+  ["LEGO Harry Potter Colección","7/9/22",82999],
+  ["Mario + Rabbids Sparks of Hope","20/10/22",229900,null,null,true],
+  ["Gang Beasts","7/10/21",74999],
+  ["Castlevania Advance Collection","23/9/21",79000],
+  ["Stardew Valley","2/5/19",32000]
+];
+const fresh = [
+  ["Fire Emblem: Fortune's Weave","17/9/26",279900],
+  ["Xenoblade Chronicles 2 – Switch 2 Edition","30/7/26",279900],
+  ["Splatoon Raiders","23/7/26",199900],
+  ["CRISIS CORE –FINAL FANTASY VII– REUNION","9/9/26",204000],
+  ["Rhythm Heaven Groove","2/7/26",159900,null,null,true],
+  ["Star Fox","25/6/26",199900,null,null,true],
+  ["Yoshi and the Mysterious Book","21/5/26",239900,null,null,true],
+  ["KINGDOM HEARTS Collection [I～III]","8/10/26",277400,null,"¡Nuevo!"],
+  ["KINGDOM HEARTS III + Re Mind (DLC)","8/10/26",148000,null,"¡Nuevo!"],
+  ["Hell is Us","8/10/26",182900,null,"¡Nuevo!"],
+  ["Disney Epic Mickey: Rebrushed","6/10/26",121900,null,"¡Nuevo!"],
+  ["Octopath Traveler","1/10/26",328600],
+  ["OCTOPATH TRAVELER II","1/10/26",238000],
+  ["EA SPORTS FC 27","25/9/26",299999],
+  ["RuneScape: Dragonwilds","15/9/26",80000],
+  ["Diablo IV: Age of Hatred Collection","15/9/26",296900],
+  ["DRAGON QUEST XI S – Definitive Edition","24/9/26",165000],
+  ["SHINOBI: Art of Vengeance","24/9/26",115990],
+  ["LEGO Batman: El Legado del Caballero de la Noche","18/9/26",234999],
+  ["Woodo – Switch 2 Edition","16/9/26",51592,64490,"-20%"],
+  ["NBA 2K27","4/9/26",188789,269699,"-30%"],
+  ["Onimusha: Way of the Sword","4/9/26",249000,null,null,true],
+  ["ELDEN RING Tarnished Edition","28/8/26",239900],
+  ["The Elder Scrolls IV: Oblivion Remastered","11/8/26",199900],
+  ["Lies of P: Complete Edition","5/8/26",189900]
+];
+
+/* ---------- Utilidades ---------- */
+const cop = n => "$ " + n.toLocaleString("es-CO");
+const hue = s => { let h=0; for(const ch of s) h=(h*31+ch.charCodeAt(0))%360; return h; };
+const grad = s => { const h=hue(s); return `linear-gradient(145deg,hsl(${h} 65% 45%),hsl(${(h+40)%360} 70% 25%))`; };
+const $ = id => document.getElementById(id);
+const toast = (msg) => { const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2200); };
+
+/* ---------- Hero ---------- */
+let cur = 0, timer;
+$("slides").innerHTML = slides.map((s,i)=>`
+  <div class="slide ${i===0?"active":""}" style="--bg-slide:linear-gradient(120deg,${s.c[0]},${s.c[1]})" role="group" aria-label="${i+1} de ${slides.length}">
+    <div class="wrap">
+      <h1>${s.t}</h1><p>${s.d}</p>
+      <a class="btn white" href="${BASE+s.href}" target="_blank" rel="noopener">${s.cta}</a>
+    </div>
+  </div>`).join("");
+$("thumbs").innerHTML = slides.map((s,i)=>`<button class="${i===0?"on":""}" style="background:linear-gradient(135deg,${s.c[0]},${s.c[1]})" aria-label="Ir a ${s.t}">${s.s}</button>`).join("");
+function go(i){
+  cur = (i+slides.length)%slides.length;
+  document.querySelectorAll(".slide").forEach((el,k)=>el.classList.toggle("active",k===cur));
+  document.querySelectorAll("#thumbs button").forEach((el,k)=>el.classList.toggle("on",k===cur));
+}
+function auto(){ clearInterval(timer); if(!matchMedia("(prefers-reduced-motion:reduce)").matches) timer=setInterval(()=>go(cur+1),6000); }
+$("prev").onclick=()=>{go(cur-1);auto()};
+$("next").onclick=()=>{go(cur+1);auto()};
+document.querySelectorAll("#thumbs button").forEach((b,i)=>b.onclick=()=>{go(i);auto()});
+$("hero").addEventListener("mouseenter",()=>clearInterval(timer));
+$("hero").addEventListener("mouseleave",auto);
+auto();
+
+/* ---------- Destacados ---------- */
+$("featured").innerHTML = featured.map(([t,sub,tag,href])=>`
+  <a class="tile" href="${BASE+href}" target="_blank" rel="noopener">
+    <div class="art" style="background:${grad(t)}">${t}</div>
+    <div class="body"><span class="tag">${tag}</span><span>${sub}</span><span class="cta">Más información</span></div>
+  </a>`).join("");
+
+/* ---------- Novedades ---------- */
+$("news").innerHTML = news.map(([d,t,p,href])=>`
+  <article><time>${d}</time><h3>${t}</h3><p>${p}</p>
+  <a class="more" href="${BASE+href}" target="_blank" rel="noopener">Leer más</a></article>`).join("");
+
+/* ---------- Juegos ---------- */
+function gameCard([t,date,price,old,flag,demo]){
+  return `<div class="game">
+    <div class="cover" style="background:${grad(t)}">${flag?`<span class="flag ${old?"off":""}">${flag}</span>`:""}${t}</div>
+    <div class="info">
+      <span class="date">${date}</span>
+      ${demo?'<span class="demo">Demo gratuito</span>':""}
+      <span class="price">${cop(price)}${old?`<s>${cop(old)}</s>`:""}</span>
+      <button class="btn ghost add" style="margin-top:8px;padding:6px 12px;font-size:13px" data-t="${t.replace(/"/g,"&quot;")}">Añadir</button>
+    </div></div>`;
+}
+$("best").innerHTML  = best.map(gameCard).join("");
+$("fresh").innerHTML = fresh.map(gameCard).join("");
+
+/* ---------- Carrito (simulado) ---------- */
+let cart = 0;
+document.addEventListener("click",e=>{
+  const add = e.target.closest(".add");
+  if(add){ cart++; $("cartCount").textContent=cart; toast(`Añadido: ${add.dataset.t}`); }
+  const tt = e.target.closest("[data-toast]");
+  if(tt){ e.preventDefault(); toast(tt.dataset.toast); }
+});
+$("cartBtn").onclick=()=>toast(cart?`Tienes ${cart} artículo(s) en el carrito`:"Tu carrito está vacío");
+
+/* ---------- Menú móvil ---------- */
+$("burger").onclick=()=>{
+  const open=$("menu").classList.toggle("open");
+  $("burger").setAttribute("aria-expanded",open);
+};
+</script>
+</body>
+</html>
